@@ -1,0 +1,96 @@
+buildscript {
+	repositories {
+		jcenter()
+		maven { url = "http://files.minecraftforge.net/maven" }
+	}
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+	}
+}
+
+repositories {
+	maven {
+		name "Sonatype (Cubic Chunks)"
+		url "https://oss.sonatype.org/content/repositories/public/"
+	}
+	// needed for transistive dependencies of DynamicTrees
+	maven {
+		name 'LDTTeam - Modding'
+		url 'https://ldtteam.jfrog.io/ldtteam/modding/'
+	}
+}
+
+apply plugin: 'idea'
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven'
+
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+
+version = "${mc_version}-${mod_version}"
+if (System.getenv()["Version"] != null)
+{
+    version = "${mc_version}-${System.getenv()["Version"]}"
+}
+
+group = package_group
+archivesBaseName = mod_name
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+	sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+	version = "${mc_version}-${forge_version}"
+	runDir = "run"
+	
+	replace "@VERSION@", project.version
+	replace "private static final boolean IS_DEV = true;", "private static final boolean IS_DEV = false;"
+	replaceIn "io/github/opencubicchunks/dynamictreescompat/DTCompatMod.java"
+	
+	makeObfSourceJar = false
+	
+	if (project.hasProperty('mappings_version'))
+		mappings = project.mappings_version
+}
+
+dependencies {
+	compile project(":DynamicTrees")
+	compileOnly "io.github.opencubicchunks:cubicchunks-api:1.12.2-0.0-SNAPSHOT"
+}
+
+processResources {
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
+	
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
+		
+		expand 'version':project.version, 'mcversion':project.minecraft.version
+	}
+	
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'mcmod.info'
+	}
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+}
+
+tasks.build.dependsOn deobfJar
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+    module.downloadJavadoc = true
+    module.downloadSources = true
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives deobfJar
+}

@@ -1,0 +1,9 @@
+[
+    {
+        "modid": "dynamictreees-cubicaddon",
+        "name": "CubicChunks DynamicTrees Addon",
+        "description": "CubicChunks addon for dynamic trees",
+        "version": "${version}",
+        "mcversion": "${mcversion}"
+    }
+]

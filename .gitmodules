@@ -1,0 +1,3 @@
+[submodule "DynamicTrees"]
+	path = DynamicTrees
+	url = https://github.com/ferreusveritas/DynamicTrees
