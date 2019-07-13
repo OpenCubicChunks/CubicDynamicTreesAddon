@@ -27,14 +27,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 @Mod(modid = DTCompatMod.MODID, version = DTCompatMod.VERSION, name = DTCompatMod.NAME,
-        dependencies = "required:cubicchunks@[0.0.899.0,);required-after:dynamictrees@[0.9.2,)"
+        dependencies = "required:cubicchunks@[0.0.899.0,);required-after:dynamictrees@[0.9.5,)"
 )
 public class DTCompatMod {
 
     public static final String MODID = "dynamictreees-cubicaddon";
     public static final String NAME = "CubicChunks DynamicTrees Addon";
     private static final boolean IS_DEV = true; // changed automatically by gradle, don't touch
-    public static final String VERSION = IS_DEV ? "@VERSION@" : "1.12.2-9.9.9";
+    public static final String VERSION = IS_DEV ? "1.12.2-9.9.9" : "@VERSION@";
 
     @Mod.EventHandler public void preInit(FMLPreInitializationEvent event) {
         if (WorldGenRegistry.isWorldGenEnabled()) {

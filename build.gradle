@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		jcenter()
-		maven { url = "http://files.minecraftforge.net/maven" }
+		maven { url = "https://files.minecraftforge.net/maven" }
 	}
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -10,13 +10,17 @@ buildscript {
 
 repositories {
 	maven {
-		name "Sonatype (Cubic Chunks)"
-		url "https://oss.sonatype.org/content/repositories/public/"
+		name = "Sonatype"
+		url = "https://oss.sonatype.org/content/repositories/public/"
 	}
 	// needed for transistive dependencies of DynamicTrees
 	maven {
-		name 'LDTTeam - Modding'
-		url 'https://ldtteam.jfrog.io/ldtteam/modding/'
+		name = 'LDTTeam - Modding'
+		url = 'https://ldtteam.jfrog.io/ldtteam/modding/'
+	}
+	maven {
+		name = "CurseForge"
+		url = "https://minecraft.curseforge.com/api/maven/"
 	}
 }
 
@@ -55,8 +59,10 @@ minecraft {
 }
 
 dependencies {
-	compile project(":DynamicTrees")
-	compileOnly "io.github.opencubicchunks:cubicchunks-api:1.12.2-0.0-SNAPSHOT"
+	compile 'dynamictrees:DynamicTrees:1.12.2:0.9.5'
+	compileOnly("io.github.opencubicchunks:cubicchunks-api:1.12.2-0.0-SNAPSHOT") {
+		exclude module: "mixin"
+	}
 }
 
 processResources {
