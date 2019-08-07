@@ -14,6 +14,9 @@ import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld;
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubeGeneratorsRegistry;
 import io.github.opencubicchunks.cubicchunks.api.worldgen.populator.ICubicPopulator;
 import io.github.opencubicchunks.cubicchunks.api.worldgen.populator.event.DecorateCubeBiomeEvent;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -25,6 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Random;
+import java.util.function.BiPredicate;
 
 @Mod(modid = DTCompatMod.MODID, version = DTCompatMod.VERSION, name = DTCompatMod.NAME,
         dependencies = "required:cubicchunks@[0.0.899.0,);required-after:dynamictrees@[0.9.5,)"
@@ -68,7 +72,6 @@ public class DTCompatMod {
     public static class CubicGeneratorTrees implements ICubicPopulator {
 
         public static class GroundFinder implements IGroundFinder {
-
             private final int cubeY;
 
             public GroundFinder(int cubeY) {
@@ -77,10 +80,19 @@ public class DTCompatMod {
 
             @Override
             public BlockPos findGround(BiomeEntry biomeEntry, World world, BlockPos start) {
+                final BiPredicate<BlockPos, IBlockState> isSurface = (pos, state) -> {
+                    Material material = state.getMaterial();
+                    Block testBlock = state.getBlock();
+                    return material == Material.GOURD || material == Material.WATER ||
+                            (material.blocksMovement() &&
+                                    !testBlock.isLeaves(state, world, pos) &&
+                                    !testBlock.isFoliage(world, pos));
+                };
+
                 BlockPos startWithY = new BlockPos(start.getX(), Coords.cubeToMaxBlock(cubeY + 1), start.getZ());
                 BlockPos posNullable = ((ICubicWorld) world).findTopBlock(
                         startWithY, Coords.cubeToCenterBlock(cubeY), Coords.cubeToCenterBlock(cubeY + 1),
-                        (pos, state) -> state.getMaterial().blocksMovement() && !TreeHelper.isTreePart(state)
+                        isSurface
                 );
                 return posNullable == null ? BlockPos.ORIGIN : posNullable.down();
             }
